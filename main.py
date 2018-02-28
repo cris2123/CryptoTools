@@ -4,7 +4,7 @@ import os
 
 from itertools import chain
 from sys import exit
-from ErrorFiles import InvalidType, NotCoinSelected, FiatInvalidType, FiatNotValid
+from userExceptions import InvalidType, NotCoinSelected, FiatInvalidType, FiatNotValid
 
 class coinMarket:
 
@@ -23,7 +23,10 @@ class coinMarket:
 
         self.response=""
         self.coinNames={}
-        self.getAllCoins()
+
+        ## funcion para obteenr todos las monedas en coin market
+        self.getCoinNames()
+
 
 
     def _checkValidFiat(self,fiat):
@@ -81,6 +84,19 @@ class coinMarket:
 
         return(isValidCoin)
 
+    def getCoinNames(self):
+
+        allData=self.getAllCoins()
+
+        with open("currencyData.json",'w') as jsonFile:
+            jsonFile.write(str(allData))
+
+        if(allData):
+
+            for data in allData:
+
+                self.coinNames[data["name"]]=(data["symbol"],data["id"])
+
 
     def getAllCoins(self,fiat=""):
 
@@ -90,56 +106,26 @@ class coinMarket:
 
             URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"+"&"+currencyFiat
 
-            try:
-
-                self.response=requests.get(URL)
-
-                if(self.response.status_code != requests.codes.ok):
-
-                    self.response.raise_for_status()
-
-                else:
-
-                    allData=self.response.json()
-
-                    for data in allData:
-
-                        self.coinNames[data["name"]]=(data["symbol"],data["id"])
-
-                    with open("currencyData.json",'w') as jsonFile:
-                        jsonFile.write(str(data))
-
-            except Exception as e:
-
-                print(e)
-                exit(0)
-
         else:
 
             URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"
 
-            try:
-                self.response=requests.get(URL)
+        try:
 
-                if(self.response.status_code != requests.codes.ok):
+            self.response=requests.get(URL)
 
-                    self.response.raise_for_status()
+            if(self.response.status_code != requests.codes.ok):
 
-                else:
+                self.response.raise_for_status()
 
-                    allData=self.response.json()
+            else:
 
-                    for data in allData:
+                return(self.response.json())
 
-                        self.coinNames[data["name"]]=(data["symbol"],data["id"])
+        except Exception as e:
 
-                    with open("currencyData.json",'w') as jsonFile:
-                        jsonFile.write(str(data))
-
-            except Exception as e:
-
-                print(e)
-                exit(0)
+            print(e)
+            exit(0)
 
     def getCoin(self,coin,fiat=""):
 
@@ -174,76 +160,73 @@ class coinMarket:
 
                 URL="https://api.coinmarketcap.com/v1/ticker/"+str(coinId)+"/?"+currencyFiat
 
-                try:
-
-                    self.response=requests.get(URL)
-
-                    if(self.response.status_code != requests.codes.ok):
-
-                        self.response.raise_for_status()
-
-                    else:
-                        data=self.response.json()
-                        print(data)
-
-                except Exception as e:
-
-                    print(e)
-
             else:
 
                 URL="https://api.coinmarketcap.com/v1/ticker/"+str(coinId)+"/"
 
-                try:
 
-                    self.response=requests.get(URL)
+            try:
 
-                    if(self.response.status_code != requests.codes.ok):
+                self.response=requests.get(URL)
 
-                        self.response.raise_for_status()
+                if(self.response.status_code != requests.codes.ok):
 
-                    else:
-                        data=self.response.json()
-                        print(data)
+                    self.response.raise_for_status()
 
-                except Exception as e:
-                    print(e)
+                else:
+                    data=self.response.json()
+                    print(data)
 
+            except Exception as e:
 
-    def getData( self,coin="",limit=100,fiat=""):
+                print(e)
 
-        try:
-            print(type(coin))
-            if (type(coin) is not (list)) and (type(coin) is not (str)):
+    def getListCoins(coins,fiat=""):
 
-                raise InvalidType("Parameter is not correct")
+        currencyFiat=self._checkValidFiat(fiat)
 
-        except InvalidType:
+        if(currencyFiat):
 
-            print("Data type not valid")
-
-
-        if coin == "":
-
-            self.response= requests.get("https://api.coinmarketcap.com/v1/ticker/")
-            data=self.response.json()
-            with open("currencyData.json",'w') as jsonFile:
-                jsonFile.write(str(data))
-
-        elif type(coin) is list:
-
-            self.response = requests.get("https://api.coinmarketcap.com/v1/ticker/?limit=0")
-            data=self.response.json()
-            with open("currencyData.json",'w') as jsonFile:
-                jsonFile.write(str(data))
+            URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"+"&"+currencyFiat
 
         else:
 
-            URL="https://api.coinmarketcap.com/v1/ticker/" + str(coin) +"/"
-            self.response = requests.get(URL)
-            data=self.response.json()
-            with open("currencyData.json",'w') as jsonFile:
-                jsonFile.write(str(data))
+            URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"
+
+        try:
+
+            self.response=requests.get(URL)
+
+            if(self.response.status_code != requests.codes.ok):
+
+                self.response.raise_for_status()
+
+            else:
+                data=self.response.json()
+
+                ### Check if a list of coins are valid
+                ### Make a request to the api
+                ### With data iterate over a list of dictionaries
+                ### check for every dictionarie if a key of a list match
+                #### put that data on a ariable and append it.
+
+                # for d in data:
+                #
+                #     if(d[""])
+
+
+        except Exception as e:
+            print(e)
+
+        else:
+            pass
+
+
+
+        #### funcion que obtenga todas las monedas y funcion que procese
+        #### las monedas existentes con sus id
+
+        #for coin in coins:
 
     def getGlobalData(self,fiat=""):
 
@@ -253,52 +236,29 @@ class coinMarket:
 
             URL="https://api.coinmarketcap.com/v1/global/"+"?"+currencyFiat
 
-            try:
-
-                self.response = requests.get(URL)
-
-                if(self.response.status_code != requests.codes.ok):
-
-                    self.response.raise_for_status()
-
-                else:
-
-                    data = self.response.json()
-                    with open("global.json",'w') as jsonFile:
-                        jsonFile.write(str(data))
-
-            except Exception as e:
-
-                print(e)
-                exit(0)
-
         else:
-
-            ### Converting to fiat currency selected
 
             URL="https://api.coinmarketcap.com/v1/global/"
 
+        try:
 
             self.response = requests.get(URL)
 
-            try:
+            if(self.response.status_code != requests.codes.ok):
 
-                self.response = requests.get(URL)
+                self.response.raise_for_status()
 
-                if(self.response.status_code != requests.codes.ok):
+            else:
 
-                    self.response.raise_for_status()
+                data = self.response.json()
+                with open("global.json",'w') as jsonFile:
+                    jsonFile.write(str(data))
 
-                else:
+        except Exception as e:
 
-                    data = self.response.json()
-                    with open("global.json",'w') as jsonFile:
-                        jsonFile.write(str(data))
+            print(e)
+            exit(0)
 
-            except Exception as e:
-
-                print(e)
-                exit(0)
 
 if __name__=="__main__":
 
@@ -307,4 +267,4 @@ if __name__=="__main__":
     # # #Market.connect()
     #Market.getCoin(coin="SBD",fiat="EUR")
     #Market.getAllCoins(fiat=2)
-    Market.getGlobalData(fiat=2)
+    #Market.getGlobalData(fiat=2)

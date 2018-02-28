@@ -44,3 +44,23 @@ Contributors:
 ##### License
 
 Not defined yet. It is open source but i did not choose a type yet.
+
+
+##### Roadmap
+
+1. Wrapper to get coinMarket and another platforms to get cryptocurrencies values.
+2. Taking data from most prominent exchanges houses. Poloniex, hitBTC, coinBase, etc
+3. That data could be obtained using asyncio libraries.
+4. Graph data and correlation between coins.
+5. Parser of news about crypto on popular pages.
+6. Trending news about crypto on google.
+7. Statistics over crypto graph to try and make predictions.
+8. Trying to make a  automated trader
+9. Create test to facilitate development of the project.
+10. Build a docker image to support this code.
+11. Make a interface with flask and vue js.
+12. Use blueprints and good html.
+13. Maybe use react to make that possible.
+14. Choose a opensource license
+15. Make a pdf to get reports weekly about crypto progress.
+16. Make a discord bot to get notifications.
