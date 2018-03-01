@@ -23,9 +23,11 @@ class coinMarket:
 
         self.response=""
         self.coinNames={}
+        self.wholeContent=""
 
         ## funcion para obteenr todos las monedas en coin market
         self.getCoinNames()
+
 
 
 
@@ -97,6 +99,7 @@ class coinMarket:
 
                 self.coinNames[data["name"]]=(data["symbol"],data["id"])
 
+        self.wholeContent=allData
 
     def getAllCoins(self,fiat=""):
 
@@ -181,45 +184,94 @@ class coinMarket:
 
                 print(e)
 
-    def getListCoins(coins,fiat=""):
+    def getListCoins(self,coins,fiat=""):
+
+        arrayValidCoins=[]
+
+        for coin in coins:
+
+            if coin in self.coinNames.keys():
+
+                arrayValidCoins.append((self.coinNames[coin][1],True))
+
+            else:
+
+                results =list(chain.from_iterable( (coinList[1], coin in coinList )
+                    for coinList in self.coinNames.values() if coin in coinList ))
+
+                if(len(results)==0):
+                    arrayValidCoins.append((coin,False))
+                else:
+                    arrayValidCoins.append(tuple(results))
+
 
         currencyFiat=self._checkValidFiat(fiat)
 
-        if(currencyFiat):
+        print(arrayValidCoins)
 
-            URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"+"&"+currencyFiat
+        coinInformation=[]
+        data=0
+        for item in self.wholeContent:
 
-        else:
+            for tupleCoin in arrayValidCoins:
 
-            URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"
+                if(tupleCoin[1]==True):
 
-        try:
+                    if(item["id"]==tupleCoin[0]):
+                        data=data+1
+                        coinInformation.append(item)
+                else:
+                    coinInformation.append("coin: "+tupleCoin[0]+" is not a valid one")
 
-            self.response=requests.get(URL)
+            if(len(coinInformation)==len(coins)):
+                break;
 
-            if(self.response.status_code != requests.codes.ok):
+            #coinInformation=[item for tupleCoin in arrayValidCoins if tupleCoin[1]==True and item["id"]==tupleCoin[0]  ]
 
-                self.response.raise_for_status()
+        for d in coinInformation:
 
-            else:
-                data=self.response.json()
+            print(d)
+            print("\n")
 
-                ### Check if a list of coins are valid
-                ### Make a request to the api
-                ### With data iterate over a list of dictionaries
-                ### check for every dictionarie if a key of a list match
-                #### put that data on a ariable and append it.
+        print(data)
 
-                # for d in data:
-                #
-                #     if(d[""])
-
-
-        except Exception as e:
-            print(e)
-
-        else:
-            pass
+        #
+        #
+        # if(currencyFiat):
+        #
+        #     URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"+"&"+currencyFiat
+        #
+        # else:
+        #
+        #     URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"
+        #
+        # try:
+        #
+        #     self.response=requests.get(URL)
+        #
+        #     if(self.response.status_code != requests.codes.ok):
+        #
+        #         self.response.raise_for_status()
+        #
+        #     else:
+        #         data=self.response.json()
+        #
+        #         ### Check if a list of coins are valid
+        #         ### Make a request to the api
+        #         ### With data iterate over a list of dictionaries
+        #         ### check for every dictionarie if a key of a list match
+        #         #### put that data on a ariable and append it.
+        #
+        #         # for d in data:
+        #         #
+        #         #     if(d[""])
+        #
+        #
+        # except Exception as e:
+        #     print(e)
+        #
+        # else:
+        #     pass
 
 
 
@@ -268,3 +320,6 @@ if __name__=="__main__":
     #Market.getCoin(coin="SBD",fiat="EUR")
     #Market.getAllCoins(fiat=2)
     #Market.getGlobalData(fiat=2)
+    coins=["Bitcoin","Steem Dollars","Ethereum","CRIS"]
+    # print(type(coins))
+    Market.getListCoins(coins,fiat="")
