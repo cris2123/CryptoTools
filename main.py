@@ -1,6 +1,7 @@
 import argparse
 import requests
 import os
+import json
 
 from itertools import chain
 from sys import exit
@@ -25,10 +26,13 @@ class coinMarket:
         self.coinNames={}
         self.wholeContent=""
 
+        self.__debugGetCoinNames()
+
+        print(self.wholeContent)
+
+
         ## funcion para obteenr todos las monedas en coin market
-        self.getCoinNames()
-
-
+        #self.getCoinNames()
 
 
     def _checkValidFiat(self,fiat):
@@ -85,6 +89,21 @@ class coinMarket:
             isValidCoin=True
 
         return(isValidCoin)
+
+    def __debugGetCoinNames(self):
+
+        # with open("currencyData.json",'r') as jsonFile:
+        #     allData= json.load(jsonFile)
+
+
+        if(allData):
+
+            for data in allData:
+
+                self.coinNames[data["name"]]=(data["symbol"],data["id"])
+
+        self.wholeContent=allData
+
 
     def getCoinNames(self):
 
@@ -210,15 +229,19 @@ class coinMarket:
         print(arrayValidCoins)
 
         coinInformation=[]
-        data=0
+
+        with open("global.json",'w') as jsonFile:
+            jsonFile.write(str(data))
+
         for item in self.wholeContent:
 
             for tupleCoin in arrayValidCoins:
+                print("Coin:"+str(tupleCoin[0]))
 
                 if(tupleCoin[1]==True):
 
                     if(item["id"]==tupleCoin[0]):
-                        data=data+1
+
                         coinInformation.append(item)
                 else:
                     coinInformation.append("coin: "+tupleCoin[0]+" is not a valid one")
@@ -233,7 +256,7 @@ class coinMarket:
             print(d)
             print("\n")
 
-        print(data)
+        #print(data)
 
         #
         #
@@ -320,6 +343,6 @@ if __name__=="__main__":
     #Market.getCoin(coin="SBD",fiat="EUR")
     #Market.getAllCoins(fiat=2)
     #Market.getGlobalData(fiat=2)
-    coins=["Bitcoin","Steem Dollars","Ethereum","CRIS"]
+    #coins=["Bitcoin","Steem Dollars","Ethereum","CRIS"]
     # print(type(coins))
-    Market.getListCoins(coins,fiat="")
+    #Market.getListCoins(coins,fiat="")
