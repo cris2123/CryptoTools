@@ -212,28 +212,19 @@ class coinMarket:
 
         coinInformation=[]
 
-        # with open("global.json",'w') as jsonFile:
-        #     jsonFile.write(str(data))
+        for tupleCoin in arrayValidCoins:
 
+            if(tupleCoin[1]==True):
 
-        for item in self.wholeContent:
+                for item in self.wholeContent:
 
-            for tupleCoin in arrayValidCoins:
-
-
-                if(tupleCoin[1]==True):
-                    print("Llegue a tupleCoin[1]:")
                     if(item["id"]==tupleCoin[0]):
-                        print("Tuple coin es:"+ str(tupleCoin[0]))
+
                         coinInformation.append(item)
+            else:
 
-                else:
-                    coinInformation.append("coin: "+ tupleCoin[0]+" is not a valid one")
+                coinInformation.append("coin: "+ tupleCoin[0]+" is not a valid one")
 
-            if(len(coinInformation)==len(coins)):
-                break;
-
-            #coinInformation=[item for tupleCoin in arrayValidCoins if tupleCoin[1]==True and item["id"]==tupleCoin[0]  ]
 
         for d in coinInformation:
 
