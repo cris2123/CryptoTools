@@ -25,11 +25,11 @@ class coinMarket:
         self.coinNames={}
         self.wholeContent=""
 
-        requests_cache.install_cache(cache_name='coinMarket_cache', backend='sqlite', expire_after=180)
+        requests_cache.install_cache(cache_name='coinMarket_cache', backend='sqlite', expire_after=120)
 
         ## funcion para obtener todos las monedas en coin market
         now = time.ctime(int(time.time()))
-        self.getCoinNames()
+        self.getCoinNames(fiat)
 
 
 
@@ -90,7 +90,7 @@ class coinMarket:
 
     def getCoinNames(self,fiat=""):
 
-        allData=self.getAllCoins(fiat)
+        allData=self.getAllCoins(fiat=fiat)
 
         with open("currencyData.json",'w') as jsonFile:
             jsonFile.write(str(allData))
@@ -109,7 +109,8 @@ class coinMarket:
 
         if(currencyFiat):
 
-            URL="https://api.coinmarketcap.com/v1/ticker/?limit=0"+"&"+currencyFiat
+            URL="https://api.coinmarketcap.com/v1/ticker/?"+str(currencyFiat)+"&limit=0"
+
 
         else:
 
@@ -213,8 +214,6 @@ class coinMarket:
         print(arrayValidCoins)
 
         currencyFiat=self._checkValidFiat(fiat)
-        print(currencyFiat)
-        print(fiat)
 
         coinInformation=[]
 
@@ -232,10 +231,10 @@ class coinMarket:
                 #coinInformation.append("coin: "+ tupleCoin[0]+" is not a valid one")
                 print("coin: "+ tupleCoin[0]+" is not a valid one")
 
-        for d in coinInformation:
+        for coin in coinInformation:
 
-            #self.parseData(coin,fiat)
-            print(d)
+            self.parseData(coin,fiat)
+
 
 
     def getGlobalData(self,fiat=""):
@@ -272,18 +271,31 @@ class coinMarket:
     def parseData(self,coin,fiat=""):
 
         print("\n")
+        print("ID: "+str(coin["id"]))
         print("Name: "+ str(coin["name"]))
+        print("Symbol: " +str(coin["symbol"]))
         print("Rank: "+str(coin["rank"]))
+        print("Available Supply: "+str(coin["available_supply"]))
+        print("Total Supply: "+str(coin["total_supply"]))
         print("Price USD: " +str(coin["price_usd"]))
         print("Price BTC: "+str(coin["price_btc"]))
-
+        print("Market Cap USD: "+str(coin["market_cap_usd"]))
+        print("Percent Change for 1 hour : "+str(coin["percent_change_1h"]))
+        print("Percent Change for 24 hour : "+str(coin["percent_change_24h"]))
+        print("Percent Change for 7 days : "+str(coin["percent_change_7d"]))
 
         if(fiat!=""):
 
             price_string="price_"
+            market_string="market_cap_"
             lowerFiat=fiat.lower()
             price_string=price_string+lowerFiat
-            print(price_string)
+            market_string=market_string+lowerFiat
+
             print("Price "+str(fiat)+": "+str(coin[price_string]))
+            print("Market Cap "+str(fiat)+": "+str(coin[market_string]))
+
+
+
 
         print("\n")

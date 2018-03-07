@@ -19,9 +19,16 @@ if __name__=="__main__":
 
     args = vars(parser.parse_args())
 
-    #### Clase para el API de CoinMarket
-    
-    #Market=coinMarket()
+    ### Clase para el API de CoinMarket
+    print(args)
+
+    if args["fiat"]!=None:
+
+        Market=coinMarket(fiat=args["fiat"])
+
+    else:
+
+        Market=coinMarket()
 
     #Market.getCoin(coin=args["coin"],fiat=args["fiat"])
     #
