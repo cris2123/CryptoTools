@@ -12,21 +12,23 @@ if __name__=="__main__":
     parser.add_argument("-c", "--coin", type=str,
 	help="search for data of a coin by name or symbol on coinMarket")
 
-    parser.add_argument("-f","--fiat",type=str,help="get data of a coin in alternative currency")
+    parser.add_argument("-f","--fiat",default="",type=str,help="get data of a coin in alternative currency")
 
-    parser.add_argument('--coinList',nargs='+',
+    parser.add_argument("-cl",'--coinList',nargs='+',
     help="search for data of a list of coins by name or symbol on coinMarket")
 
     args = vars(parser.parse_args())
 
     #### Clase para el API de CoinMarket
-    # Market=coinMarket()
-    #
-    # #Market.getCoin(coifor d in coinInformation:
+    
+    #Market=coinMarket()
+
+    #Market.getCoin(coin=args["coin"],fiat=args["fiat"])
     #
     # #Market.getAllCoins(fiat=2)
     # #Market.getGlobalData(fiat=args["fiat"])
     # print(args)
     # #coins=["Bitcoin","Steem Dollars","Ethereum","CRIS"]
     # # print(type(coins))
-    # Market.getListCoins(coins=args["coinList"],fiat=args["fiat"])
+    #print(args)
+    Market.getListCoins(coins=args["coinList"],fiat=args["fiat"])

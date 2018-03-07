@@ -1,4 +1,6 @@
 import requests
+import requests_cache
+import time
 
 from itertools import chain
 from sys import exit
@@ -6,7 +8,7 @@ from userExceptions import InvalidType, NotCoinSelected, FiatInvalidType, FiatNo
 
 class coinMarket:
 
-    def __init__(self):
+    def __init__(self,fiat=""):
 
         """ For now will be empty
 
@@ -23,8 +25,12 @@ class coinMarket:
         self.coinNames={}
         self.wholeContent=""
 
-        ## funcion para obteenr todos las monedas en coin market
+        requests_cache.install_cache(cache_name='coinMarket_cache', backend='sqlite', expire_after=180)
+
+        ## funcion para obtener todos las monedas en coin market
+        now = time.ctime(int(time.time()))
         self.getCoinNames()
+
 
 
     def _checkValidFiat(self,fiat):
@@ -35,7 +41,7 @@ class coinMarket:
 
         try:
 
-            if(fiat!="" or fiat==None):
+            if(fiat!=""):
                 if(type(fiat)!=str):
                     print("Fiat invalid type")
                     raise FiatInvalidType
@@ -82,9 +88,9 @@ class coinMarket:
 
         return(isValidCoin)
 
-    def getCoinNames(self):
+    def getCoinNames(self,fiat=""):
 
-        allData=self.getAllCoins()
+        allData=self.getAllCoins(fiat)
 
         with open("currencyData.json",'w') as jsonFile:
             jsonFile.write(str(allData))
@@ -111,7 +117,9 @@ class coinMarket:
 
         try:
 
+            now = time.ctime(int(time.time()))
             self.response=requests.get(URL)
+            print ("Time: {0} / Used Cache: {1}".format(now, self.response.from_cache))
 
             if(self.response.status_code != requests.codes.ok):
 
@@ -174,7 +182,8 @@ class coinMarket:
 
                 else:
                     data=self.response.json()
-                    print(data)
+                    self.parseData(data[0],fiat)
+
 
             except Exception as e:
 
@@ -202,10 +211,10 @@ class coinMarket:
 
 
         print(arrayValidCoins)
+
         currencyFiat=self._checkValidFiat(fiat)
-
-
         print(currencyFiat)
+        print(fiat)
 
         coinInformation=[]
 
@@ -220,13 +229,13 @@ class coinMarket:
                         coinInformation.append(item)
             else:
 
-                coinInformation.append("coin: "+ tupleCoin[0]+" is not a valid one")
-
+                #coinInformation.append("coin: "+ tupleCoin[0]+" is not a valid one")
+                print("coin: "+ tupleCoin[0]+" is not a valid one")
 
         for d in coinInformation:
 
+            #self.parseData(coin,fiat)
             print(d)
-            print("\n")
 
 
     def getGlobalData(self,fiat=""):
@@ -259,3 +268,22 @@ class coinMarket:
 
             print(e)
             exit(0)
+
+    def parseData(self,coin,fiat=""):
+
+        print("\n")
+        print("Name: "+ str(coin["name"]))
+        print("Rank: "+str(coin["rank"]))
+        print("Price USD: " +str(coin["price_usd"]))
+        print("Price BTC: "+str(coin["price_btc"]))
+
+
+        if(fiat!=""):
+
+            price_string="price_"
+            lowerFiat=fiat.lower()
+            price_string=price_string+lowerFiat
+            print(price_string)
+            print("Price "+str(fiat)+": "+str(coin[price_string]))
+
+        print("\n")
