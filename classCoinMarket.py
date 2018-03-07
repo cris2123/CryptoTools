@@ -211,7 +211,7 @@ class coinMarket:
                     arrayValidCoins.append(tuple(results))
 
 
-        print(arrayValidCoins)
+
 
         currencyFiat=self._checkValidFiat(fiat)
 
@@ -262,6 +262,21 @@ class coinMarket:
                 data = self.response.json()
                 with open("global.json",'w') as jsonFile:
                     jsonFile.write(str(data))
+
+                print("\n")
+                print("Total Market Cap USD: "+str(data["total_market_cap_usd"]))
+
+                if(fiat!=None):
+                    market_cap="total_market_cap_" + fiat.lower()
+                    print("Total Market Cap "+str(fiat)+": "+ str(data[market_cap]))
+
+
+                print("Active currencies: "+str(data["active_currencies"]))
+                print("Active assets: "+str(data["active_assets"]))
+                print("Active Markets: "+str(data["active_markets"]))
+                print("\n")
+
+
 
         except Exception as e:
 

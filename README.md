@@ -18,21 +18,25 @@ A suit of parsers and API calls to notorious websites where we can analyze crypt
 [License](#license)
 
 <a name="installation"/>
+
 ##### Installation
 
 
 
 <a name="usage"/>
+
 ##### Usage
 
 
 
 <a name="contributing"/>
+
 ##### Contributing
 
 
 
 <a name="credits"/>
+
 ##### Credits
 
 Author: Cristhian Bravo.

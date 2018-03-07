@@ -17,25 +17,31 @@ if __name__=="__main__":
     parser.add_argument("-cl",'--coinList',nargs='+',
     help="search for data of a list of coins by name or symbol on coinMarket")
 
+    parser.add_argument("-w",'--website',default="coinMarket",type=str,
+    help="select a website to parse or use api calls (for now only coin market)")
+
+    parser.add_argument("-g","--globalData",default=False,help="Get global cryptocurrency market data")
+
     args = vars(parser.parse_args())
 
     ### Clase para el API de CoinMarket
-    print(args)
 
-    if args["fiat"]!=None:
+    Market=coinMarket(fiat=args["fiat"])
 
-        Market=coinMarket(fiat=args["fiat"])
+    if(args["globalData"]!=False):
+        Market.getGlobalData(fiat=args["fiat"])
 
-    else:
+    if args["coin"]!=None and args["coinList"]!=None:
 
-        Market=coinMarket()
+        if(args["coin"] not in args["coinList"]):
+            args["coinList"].append(args["coin"])
 
-    #Market.getCoin(coin=args["coin"],fiat=args["fiat"])
-    #
-    # #Market.getAllCoins(fiat=2)
-    # #Market.getGlobalData(fiat=args["fiat"])
-    # print(args)
-    # #coins=["Bitcoin","Steem Dollars","Ethereum","CRIS"]
-    # # print(type(coins))
-    #print(args)
-    Market.getListCoins(coins=args["coinList"],fiat=args["fiat"])
+        Market.getListCoins(coins=args["coinList"],fiat=args["fiat"])
+
+    elif(args["coin"]!=None and args["coinList"]==None):
+
+        Market.getCoin(coin=args["coin"],fiat=args["fiat"])
+
+    elif(args["coin"]==None and args["coinList"]!=None):
+
+        Market.getListCoins(coins=args["coinList"],fiat=args["fiat"])
