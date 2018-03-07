@@ -1,6 +1,7 @@
 import requests
 import requests_cache
 import time
+import os
 
 from itertools import chain
 from sys import exit
@@ -25,13 +26,26 @@ class coinMarket:
         self.coinNames={}
         self.wholeContent=""
 
-        requests_cache.install_cache(cache_name='coinMarket_cache', backend='sqlite', expire_after=120)
+        self._setCache()
+        #requests_cache.install_cache(cache_name='coinMarket_cache', backend='sqlite', expire_after=120)
 
         ## funcion para obtener todos las monedas en coin market
         now = time.ctime(int(time.time()))
         self.getCoinNames(fiat)
 
+    def _setCache(self):
 
+        folderName="/CryptoToolCache"
+        root_os= os.path.abspath(os.sep)
+        cache_dir= os.path.join(root_os,"tmp"+folderName)
+        os.makedirs(cache_dir, exist_ok=True)
+        cacheFileName="coinMarket_cache"
+
+        os.makedirs(cache_dir, exist_ok=True)
+
+        requests_cache.install_cache(
+            cache_name=os.path.join(cache_dir, cacheFileName),backend='sqlite',expire_after=120
+        )
 
     def _checkValidFiat(self,fiat):
 
@@ -110,7 +124,6 @@ class coinMarket:
         if(currencyFiat):
 
             URL="https://api.coinmarketcap.com/v1/ticker/?"+str(currencyFiat)+"&limit=0"
-
 
         else:
 
@@ -309,8 +322,5 @@ class coinMarket:
 
             print("Price "+str(fiat)+": "+str(coin[price_string]))
             print("Market Cap "+str(fiat)+": "+str(coin[market_string]))
-
-
-
 
         print("\n")

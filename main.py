@@ -1,6 +1,11 @@
+#!/usr/bin/python
 import argparse
 import os
 from classCoinMarket import coinMarket
+
+
+
+# determine platform-specific user cache directory
 
 
 if __name__=="__main__":
