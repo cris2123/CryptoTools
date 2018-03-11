@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import requests
 import requests_cache
 import time
@@ -36,12 +37,13 @@ class coinMarket:
     def _setCache(self):
 
         folderName="/CryptoToolCache"
-        root_os= os.path.abspath(os.sep)
-        cache_dir= os.path.join(root_os,"tmp"+folderName)
-        os.makedirs(cache_dir, exist_ok=True)
         cacheFileName="coinMarket_cache"
 
-        os.makedirs(cache_dir, exist_ok=True)
+        root_os= os.path.abspath(os.sep)
+        cache_dir= os.path.join(root_os,"tmp"+folderName)
+
+        if(not os.path.exists(cache_dir)):
+            os.makedirs(cache_dir, exist_ok=True)
 
         requests_cache.install_cache(
             cache_name=os.path.join(cache_dir, cacheFileName),backend='sqlite',expire_after=120
@@ -279,7 +281,7 @@ class coinMarket:
                 print("\n")
                 print("Total Market Cap USD: "+str(data["total_market_cap_usd"]))
 
-                if(fiat!=None):
+                if(fiat!=""):
                     market_cap="total_market_cap_" + fiat.lower()
                     print("Total Market Cap "+str(fiat)+": "+ str(data[market_cap]))
 
